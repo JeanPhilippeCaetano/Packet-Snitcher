@@ -7,7 +7,7 @@ variables:
   PROJECT_DIR: "/home/root/project"
   DOCKER_COMPOSE_FILE: "/home/root/project/docker-compose.yml"
 
-# Stage de clonage du repo
+# Clonage du repo
 clone_repo:
   stage: clone
   script:
@@ -31,18 +31,17 @@ clone_repo:
       fi
 
 
-# Stage de build du docker-compose
+# Build du docker-compose
 build_docker:
   stage: build
   script:
     - cd $PROJECT_DIR
     - docker-compose -f $DOCKER_COMPOSE_FILE build
 
-# Stage de lancement du docker-compose
+# Lancement du docker-compose
 deploy_docker:
   stage: deploy
   script:
     - cd $PROJECT_DIR
     - docker-compose -f $DOCKER_COMPOSE_FILE up -d
 
-# Optionnel : Vous pouvez ajouter un "when" ou "only" pour conditionner l'exécution, par exemple sur des pushes vers la branche main.
