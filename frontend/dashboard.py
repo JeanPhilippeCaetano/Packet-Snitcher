@@ -16,7 +16,7 @@ def fetch_data_from_api(endpoint: str, params: dict = None):
         st.error(f"Erreur API : {e}")
         return None
 
-@st.cache_data  # Cache les données pour éviter les appels répétés
+@st.cache_data 
 def fetch_connection_data(limit: int):
     """Récupère les données de connexion depuis l'API et filtre les colonnes nécessaires"""
     data = fetch_data_from_api(f"{API_URL}/{limit}")
@@ -45,7 +45,7 @@ def predict_single_connection(conn_id: int):
     return None
 
 def show_dashboard():
-    st.title("🔍 Surveillance Réseau")
+    st.title("Surveillance Réseau")
 
     limit = st.slider("Nombre de connexions à charger :", 10, 500, 50)
 
