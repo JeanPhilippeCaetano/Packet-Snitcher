@@ -26,7 +26,7 @@ def fetch_connection_data(limit: int):
 
 def get_data_from_api(conn_id: int):
     """Récupère les données d'une connexion spécifique depuis l'API."""
-    data = fetch_data_from_api(f"{API_URL}/id/{conn_id}")
+    data = fetch_data_from_api(f"{PREDICT_URL}/{conn_id}")
     if data:
         return pd.DataFrame([{
             "id": data.get("id"),

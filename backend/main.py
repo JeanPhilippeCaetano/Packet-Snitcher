@@ -30,61 +30,46 @@ def prepare_data(df):
 @app.get("/data/{limit}")
 def get_data(limit: int):
     try:
-        query = f"SELECT * FROM connexions LIMIT {limit};"
+        query = "SELECT * FROM connexions;"
         df = load_data(query)
 
         if df.empty:
             raise HTTPException(status_code=404, detail="Aucune donnée trouvée")
 
-        X_encoded = prepare_data(df)
+        # Conversion du label
+        df['label'] = np.where(df['label'] == 'normal', 0, 1)
 
-        # Assurer l'alignement exact avec les colonnes du modèle entraîné
+        # Séparation des anomalies et données normales
+        anomalies = df[df['label'] == 1]
+        normales = df[df['label'] == 0]
+
+        nb_anomalies = int(limit * 0.05)
+        nb_normales = limit - nb_anomalies
+
+        # Échantillonnage forcé avec 5% d'anomalies
+        sample_anomalies = anomalies.sample(n=min(nb_anomalies, len(anomalies)), replace=False, random_state=42)
+        sample_normales = normales.sample(n=min(nb_normales, len(normales)), replace=False, random_state=42)
+
+        df_sample = pd.concat([sample_normales, sample_anomalies]).sample(frac=1, random_state=42)
+
+        # Préparation des données
+        X_encoded = prepare_data(df_sample)
+
         train_columns = dm.model.feature_names_in_
         X_aligned = X_encoded.reindex(columns=train_columns, fill_value=0)
 
         predictions = dm.predict(X_aligned)
 
-        # Création du DataFrame final avec les prédictions
-        df_result = df.drop(columns=['label']).copy()
+        df_result = df_sample.drop(columns=['label']).copy()
         df_result['statut'] = ['Normal' if pred == 0 else 'Suspect' for pred in predictions]
 
-        # Conversion directe en JSON
         return df_result.to_dict(orient="records")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur : {e}")
 
-# Route pour obtenir les données d'un ID spécifique pour la simulation de l'interface utilisateur    
-@app.get("/data/id/{id}")
-def get_data_by_id(id: int):
-    try:
-        query = f"SELECT * FROM connexions WHERE id = {id};"
-        df = load_data(query)
 
-        if df.empty:
-            raise HTTPException(status_code=404, detail="ID non trouvé dans la base")
-
-        X_encoded = prepare_data(df)
-
-        # Assurer l'alignement exact avec les colonnes du modèle entraîné
-        train_columns = dm.model.feature_names_in_
-        X_aligned = X_encoded.reindex(columns=train_columns, fill_value=0)
-
-        prediction = dm.predict(X_aligned)
-
-        # Création du DataFrame final avec la prédiction
-        df_result = df.drop(columns=['label']).copy()
-        df_result['statut'] = 'Normal' if prediction.tolist()[0] == 0 else 'Suspect'
-
-        # Conversion directe en JSON
-        return df_result.to_dict(orient="records")[0]  # Renvoie un seul objet JSON (pas une liste)
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur : {e}")
-
-
-
-# Route pour effectuer la prédiction sur un nouvel échantillon (données entrantes)
+# Route pour effectuer la prédiction et obtenir les données d'un ID spécifique
 @app.get("/predict/{id}")
 def predict_single(id: int):
     try:
@@ -95,12 +80,19 @@ def predict_single(id: int):
             raise HTTPException(status_code=404, detail="ID non trouvé dans la base")
 
         X_encoded = prepare_data(df)
-         # Assurer que les colonnes correspondent à celles du modèle
+        # Assurer que les colonnes correspondent à celles du modèle
         train_columns = dm.model.feature_names_in_
-        X_encoded = X_encoded.reindex(columns=train_columns, fill_value=0)
+        X_aligned = X_encoded.reindex(columns=train_columns, fill_value=0)
 
-        prediction = dm.predict(X_encoded)
-        return {"id": id, "prediction": 'Normal' if prediction.tolist()[0] == 0 else 'Suspect'}
+        prediction = dm.predict(X_aligned)
+        prediction_status = 'Normal' if prediction.tolist()[0] == 0 else 'Suspect'
+        
+        # Création du DataFrame final avec la prédiction
+        df_result = df.drop(columns=['label']).copy() if 'label' in df.columns else df.copy()
+        df_result['statut'] = prediction_status
+        
+        # Conversion directe en JSON
+        return df_result.to_dict(orient="records")[0]  # Renvoie un seul objet JSON (pas une liste)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur : {e}")
