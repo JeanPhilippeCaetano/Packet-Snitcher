@@ -8,26 +8,26 @@ Ce projet propose une application web de simulation de flux réseau basée sur l
 
 ### Interface de Simulation
 
-Visualisation en temps réel ou en mode playback des connexions réseau issues du dataset KDD Cup 99.
+* Visualisation en temps réel ou en mode playback des connexions réseau issues du dataset KDD Cup 99.
 
-Affichage dynamique des flux avec possibilité de filtrage, zoom et consultation des détails des événements.
+* Affichage dynamique des flux avec possibilité de filtrage, zoom et consultation des détails des événements.
 
 ## Agent de Détection d’Anomalies
 
-Analyse en temps réel des connexions simulées.
+* Analyse en temps réel des connexions simulées.
 
-Détection des comportements anormaux à l’aide d’un modèle de machine learning.
+* Détection des comportements anormaux à l’aide d’un modèle de machine learning.
 
-Génération d’alertes avec des indicateurs tels que score de probabilité et classification.
+* Génération d’alertes avec des indicateurs tels que score de probabilité et classification.
 
-Journalisation et traçabilité des événements détectés.
+* Journalisation et traçabilité des événements détectés.
 
 ## Intégration et Déploiement
 
-API (REST ou autre) pour la communication entre l’interface de simulation et l’agent de détection.
+* API (REST ou autre) pour la communication entre l’interface de simulation et l’agent de détection.
 
-Déploiement conteneurisé avec Docker.
+* Déploiement conteneurisé avec Docker.
 
-Intégration continue et bonnes pratiques DevOps.
+* Intégration continue et bonnes pratiques DevOps.
 
 
