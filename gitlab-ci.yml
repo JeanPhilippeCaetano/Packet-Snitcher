@@ -1,0 +1,46 @@
+stages:
+  - clone
+  - build
+  - deploy
+
+variables:
+  PROJECT_DIR: "/home/root/project"
+  DOCKER_COMPOSE_FILE: "/home/root/project/docker-compose.yml"
+  GITLAB_TOKEN: "$Token-Hackaton"  
+
+# Clonage du repo
+clone_repo:
+  stage: clone
+  script:
+    - |
+      if [ -d "$PROJECT_DIR/.git" ]; then
+        echo "Le dossier existe déjà et contient un dépôt Git."
+        cd $PROJECT_DIR
+        REMOTE_URL=$(git config --get remote.origin.url)
+        if [[ "$REMOTE_URL" == "https://gitlab.com/hackaton-ynov/hackaton-ynov-2025.git" ]]; then
+          echo "Le dépôt correct est déjà cloné. Exécution d'un git pull..."
+          git pull origin main
+        else
+          echo "Le dossier contient un autre dépôt. Suppression et re-clonage..."
+          cd ..
+          rm -rf $PROJECT_DIR
+          git clone https://$GITLAB_TOKEN@gitlab.com/hackaton-ynov/hackaton-ynov-2025.git $PROJECT_DIR
+        fi
+      else
+        echo "Le repository n'est pas cloné. Clonage depuis GitLab..."
+        git clone https://$GITLAB_TOKEN@gitlab.com/hackaton-ynov/hackaton-ynov-2025.git $PROJECT_DIR
+      fi
+
+# Build du docker-compose
+build_docker:
+  stage: build
+  script:
+    - cd $PROJECT_DIR
+    - docker-compose -f $DOCKER_COMPOSE_FILE build
+
+# Lancement du docker-compose
+deploy_docker:
+  stage: deploy
+  script:
+    - cd $PROJECT_DIR
+    - docker-compose -f $DOCKER_COMPOSE_FILE up -d
