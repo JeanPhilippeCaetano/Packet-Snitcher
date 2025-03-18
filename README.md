@@ -1,6 +1,4 @@
-# Packet-Snitcher
-
-# Projet de Simulation et Détection d'Anomalies Réseau
+# Projet de Simulation et Détection d'Anomalies Réseau (Packet-Snitcher)
 
 ## Description
 
