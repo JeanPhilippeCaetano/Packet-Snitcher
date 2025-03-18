@@ -31,3 +31,28 @@ Ce projet propose une application web de simulation de flux réseau basée sur l
 * Intégration continue et bonnes pratiques DevOps.
 
 
+
+## Lancement & Installation
+
+Cloner le projet 
+
+```bash
+  git clone https://github.com/JeanPhilippeCaetano/Packet-Snitcher.git
+```
+
+Se déplacer dans le dossier cloné :
+
+```bash
+cd Packet-Snitcher/
+```
+
+Lancer le docker-compose :
+
+```bash
+docker-compose up --build
+```
+
+Aller sur le site localement :
+http://localhost:8501/
+
+Aller sur le site hébergé : http://hackatonsnitch.ddns.net/ ou http://4.251.8.2:8501/ 
