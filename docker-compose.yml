@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/mydatabase
+      - DATABASE_URL=postgresql://user:password@db:5432/kdd_cup99
     depends_on:
       - db
 
@@ -24,12 +24,13 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: kdd_cup99
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data:/docker-entrypoint-initdb.d/data
     ports:
       - "5432:5432"
 

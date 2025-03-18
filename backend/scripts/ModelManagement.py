@@ -12,4 +12,4 @@ class ModelManagement:
             self.model = pickle.load(file)
                 
     def predict(self, X):
-        return self.model.predict_proba(X)[0,1]
+        return self.model.predict(X)
