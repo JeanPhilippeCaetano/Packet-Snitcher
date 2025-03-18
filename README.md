@@ -24,10 +24,12 @@ Génération d’alertes avec des indicateurs tels que score de probabilité et 
 
 Journalisation et traçabilité des événements détectés.
 
-## Intégration et Déploiement
+## Intégration et Déploiement
 
 API (REST ou autre) pour la communication entre l’interface de simulation et l’agent de détection.
 
 Déploiement conteneurisé avec Docker.
 
 Intégration continue et bonnes pratiques DevOps.
+
+
