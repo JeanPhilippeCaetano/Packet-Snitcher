@@ -54,6 +54,35 @@ def get_data(limit: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur : {e}")
 
+# Route pour obtenir les données d'un ID spécifique pour la simulation de l'interface utilisateur    
+@app.get("/data/id/{id}")
+def get_data_by_id(id: int):
+    try:
+        query = f"SELECT * FROM connexions WHERE id = {id};"
+        df = load_data(query)
+
+        if df.empty:
+            raise HTTPException(status_code=404, detail="ID non trouvé dans la base")
+
+        X_encoded = prepare_data(df)
+
+        # Assurer l'alignement exact avec les colonnes du modèle entraîné
+        train_columns = dm.model.feature_names_in_
+        X_aligned = X_encoded.reindex(columns=train_columns, fill_value=0)
+
+        prediction = dm.predict(X_aligned)
+
+        # Création du DataFrame final avec la prédiction
+        df_result = df.drop(columns=['label']).copy()
+        df_result['statut'] = 'Normal' if prediction.tolist()[0] == 0 else 'Suspect'
+
+        # Conversion directe en JSON
+        return df_result.to_dict(orient="records")[0]  # Renvoie un seul objet JSON (pas une liste)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur : {e}")
+
+
 
 # Route pour effectuer la prédiction sur un nouvel échantillon (données entrantes)
 @app.get("/predict/{id}")
